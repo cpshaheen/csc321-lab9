@@ -109,14 +109,18 @@ def diffHellman(p,g,amessage,bmessage):
 def generateKeys(prime1, prime2, e = 65537):
     n = prime1 * prime2
     phi = (prime1-1) * (prime2-1)
+
+    # Check for e and phi to be coprime
     while e < phi:
         if number.GCD(e, phi) == 1:
             break
         else:
-            e+=1
-    x = 2
-    decrypt = ((1 + x * phi)//e) 
-    return e, decrypt, n
+           e+=1
+
+    #Multiplicative Inverse Calculation
+    d = pow(e, -1) % phi
+    
+    return e, d, n
 
 def rsaEncrypt(e, public, msg):
     print("Encrypting @:")

@@ -106,20 +106,27 @@ def diffHellman(p,g,amessage,bmessage):
 
 # diffHellman(37,5,"Hi Bob!","Hi Alice!")
 
+# source: https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm#Python
+def xgcd(a, b):
+    # return (g, x, y) such that a*x + b*y = g = gcd(a, b)
+    x0, x1, y0, y1 = 0, 1, 1, 0
+    while a != 0:
+        q, b, a = b // a, a, b % a
+        y0, y1 = y1, y0 - q * y1
+        x0, x1 = x1, x0 - q * x1
+    return b, x0, y0
+
+# source: https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm#Python
+def get_mod_inv(a ,b):
+    g, x, _ = xgcd(a,b)
+    if g == 1:
+        return x % b
+
+
 def generateKeys(prime1, prime2, e = 65537):
     n = prime1 * prime2
     phi = (prime1-1) * (prime2-1)
-
-    # Check for e and phi to be coprime
-    while e < phi:
-        if number.GCD(e, phi) == 1:
-            break
-        else:
-           e+=1
-
-    #Multiplicative Inverse Calculation
-    d = pow(e, -1) % phi
-    
+    d = get_mod_inv(e, phi)
     return e, d, n
 
 def rsaEncrypt(e, public, msg):
@@ -138,9 +145,9 @@ def main():
     message = 20
     prime1 = number.getPrime(2048)
     prime2 = number.getPrime(2048)
-    e, decrypt, n = generateKeys(prime1, prime2)
-    encrypted_msg = rsaEncrypt(e, n, message)
-    decrypted_msg = rsaDecrypt(decrypt, n, encrypted_msg)
+    e, d, public = generateKeys(prime1, prime2)
+    encrypted_msg = rsaEncrypt(e, public, message)
+    decrypted_msg = rsaDecrypt(d, public, encrypted_msg)
     print(decrypted_msg)
 
 

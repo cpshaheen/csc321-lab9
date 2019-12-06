@@ -132,14 +132,18 @@ def generateKeys(prime1, prime2, e = 65537):
 def rsaEncrypt(e, public, msg):
     print("Encrypting @:")
     print(datetime.now())
-    encrypted_msg = pow(msg, e) % public
+    encrypted_msg = pow(msg, e, public)
     return encrypted_msg
 
 def rsaDecrypt(d, public, msg):
     print("Decrypting @:")
     print(datetime.now())
-    decrypted_msg = pow(msg, d) % public
+    decrypted_msg = pow(msg, d, public)
     return decrypted_msg
+
+def rsaMod(e, public, msg):
+    print("Mallory modifying the message...")
+    return msg * pow(3, e, public)
 
 def main():
     message = 20
@@ -147,7 +151,8 @@ def main():
     prime2 = number.getPrime(2048)
     e, d, public = generateKeys(prime1, prime2)
     encrypted_msg = rsaEncrypt(e, public, message)
-    decrypted_msg = rsaDecrypt(d, public, encrypted_msg)
+    mod_msg = rsaMod(e, public, encrypted_msg)
+    decrypted_msg = rsaDecrypt(d, public, mod_msg)
     print(decrypted_msg)
 
 
